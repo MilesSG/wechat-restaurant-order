@@ -1,0 +1,97 @@
+<!--pages/home/home.wxml-->
+<view class="container home-container">
+  <!-- 头部轮播图 -->
+  <view class="banner-section">
+    <swiper class="banner-swiper" indicator-dots="{{true}}" autoplay="{{true}}" interval="4000" duration="500" circular="{{true}}">
+      <swiper-item wx:for="{{banners}}" wx:key="id">
+        <image class="banner-image" src="{{item.image}}" mode="aspectFill"></image>
+        <view class="banner-content">
+          <text class="banner-title">{{item.title}}</text>
+          <text class="banner-desc">{{item.desc}}</text>
+        </view>
+      </swiper-item>
+    </swiper>
+  </view>
+
+  <!-- 快捷功能区 -->
+  <view class="quick-actions">
+    <view class="action-item" bindtap="scanQRCode">
+      <view class="action-icon icon-scan pulse">🍽️</view>
+      <text class="action-text">立即点餐</text>
+    </view>
+    <view class="action-item" bindtap="navigateTo" data-url="/pages/queue-status/queue-status">
+      <view class="action-icon icon-queue">🕒</view>
+      <text class="action-text">排队取号</text>
+    </view>
+    <view class="action-item" bindtap="navigateTo" data-url="/pages/user-reviews/user-reviews">
+      <view class="action-icon icon-review">⭐</view>
+      <text class="action-text">用户评价</text>
+    </view>
+    <view class="action-item" bindtap="navigateTo" data-url="/pages/menu/menu">
+      <view class="action-icon icon-menu">📋</view>
+      <text class="action-text">菜单预览</text>
+    </view>
+  </view>
+
+  <!-- 特色推荐 -->
+  <view class="section-title">
+    <text class="title-text">特色推荐</text>
+    <view class="title-more" bindtap="navigateTo" data-url="/pages/menu/menu">查看全部</view>
+  </view>
+  
+  <scroll-view class="featured-dishes" scroll-x="{{true}}" enhanced="{{true}}" show-scrollbar="{{false}}">
+    <view class="dish-card" wx:for="{{featuredDishes}}" wx:key="id" bindtap="navigateToDish" data-id="{{item.id}}">
+      <image class="dish-image" src="{{item.image}}" mode="aspectFill"></image>
+      <view class="dish-info">
+        <text class="dish-name">{{item.name}}</text>
+        <text class="dish-price">¥{{item.price}}</text>
+      </view>
+      <view wx:if="{{item.tag}}" class="dish-tag">{{item.tag}}</view>
+    </view>
+  </scroll-view>
+
+  <!-- 用户评价 -->
+  <view class="section-title">
+    <text class="title-text">顾客评价</text>
+    <view class="title-more" bindtap="navigateTo" data-url="/pages/user-reviews/user-reviews">更多评价</view>
+  </view>
+
+  <view class="reviews-preview">
+    <swiper class="reviews-swiper" autoplay="{{true}}" interval="5000" duration="600" circular="{{true}}" vertical="{{true}}" display-multiple-items="2">
+      <swiper-item class="review-item" wx:for="{{recentReviews}}" wx:key="id">
+        <view class="review-card">
+          <image class="reviewer-avatar" src="{{item.avatar || '/images/default_avatar.png'}}" mode="aspectFill"></image>
+          <view class="review-content">
+            <view class="reviewer-info">
+              <text class="reviewer-name">{{item.username}}</text>
+              <view class="reviewer-rating">
+                <text class="rating-star" wx:for="{{item.rating}}" wx:key="*this" wx:for-item="star">★</text>
+              </view>
+            </view>
+            <text class="review-text">{{item.content}}</text>
+          </view>
+        </view>
+      </swiper-item>
+    </swiper>
+  </view>
+
+  <!-- 餐厅信息 -->
+  <view class="restaurant-info card">
+    <view class="info-row">
+      <view class="info-icon">📍</view>
+      <text class="info-text">{{restaurantInfo.address}}</text>
+    </view>
+    <view class="info-row">
+      <view class="info-icon">🕙</view>
+      <text class="info-text">{{restaurantInfo.hours}}</text>
+    </view>
+    <view class="info-row">
+      <view class="info-icon">📞</view>
+      <text class="info-text">{{restaurantInfo.phone}}</text>
+    </view>
+    <view class="info-actions">
+      <button class="info-button" bindtap="makePhoneCall">拨打电话</button>
+      <button class="info-button" bindtap="openLocation">查看地图</button>
+    </view>
+  </view>
+</view> 

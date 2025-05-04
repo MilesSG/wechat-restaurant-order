@@ -1,0 +1,102 @@
+<!--pages/queue-status/queue-status.wxml-->
+<view class="container queue-container">
+  <!-- 头部状态 -->
+  <view class="queue-header">
+    <view class="header-bg"></view>
+    <view class="queue-status-card">
+      <view class="status-title">当前排队状态</view>
+      <block wx:if="{{hasQueueNumber}}">
+        <view class="queue-number">{{queueNumber}}</view>
+        <view class="queue-info">
+          <view class="info-item">
+            <text class="info-label">前面等待</text>
+            <text class="info-value">{{waitingCount}} 桌</text>
+          </view>
+          <view class="info-item">
+            <text class="info-label">预计等待</text>
+            <text class="info-value">{{estimatedWaitTime}} 分钟</text>
+          </view>
+        </view>
+        <view class="queue-message">{{queueMessage}}</view>
+      </block>
+      <block wx:else>
+        <view class="no-queue-tip">
+          <image class="no-queue-icon" src="/images/queue_empty.png" mode="aspectFit"></image>
+          <text>您当前没有排队</text>
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <!-- 当前餐厅状态 -->
+  <view class="restaurant-status card">
+    <view class="status-row">
+      <view class="status-item">
+        <text class="status-label">当前排队</text>
+        <text class="status-value">{{totalWaiting}} 组</text>
+      </view>
+      <view class="status-item">
+        <text class="status-label">预计等位</text>
+        <text class="status-value">{{averageWaitTime}} 分钟</text>
+      </view>
+    </view>
+    <view class="divider"></view>
+    <view class="status-table-type">
+      <view class="table-type-item {{currentTab === 'small' ? 'active' : ''}}" bindtap="switchTab" data-tab="small">
+        <text class="type-name">小桌（1-2人）</text>
+        <text class="type-count">{{smallTableCount}}桌等待</text>
+      </view>
+      <view class="table-type-item {{currentTab === 'medium' ? 'active' : ''}}" bindtap="switchTab" data-tab="medium">
+        <text class="type-name">中桌（3-4人）</text>
+        <text class="type-count">{{mediumTableCount}}桌等待</text>
+      </view>
+      <view class="table-type-item {{currentTab === 'large' ? 'active' : ''}}" bindtap="switchTab" data-tab="large">
+        <text class="type-name">大桌（5人以上）</text>
+        <text class="type-count">{{largeTableCount}}桌等待</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 当前叫号 -->
+  <view class="current-calling card">
+    <view class="calling-title">当前叫号</view>
+    <view class="calling-numbers">
+      <view class="number-item" wx:for="{{callingNumbers}}" wx:key="id">{{item}}</view>
+      <view wx:if="{{callingNumbers.length === 0}}" class="no-calling">当前没有正在叫号的桌位</view>
+    </view>
+  </view>
+
+  <!-- 底部按钮 -->
+  <view class="bottom-action">
+    <button wx:if="{{!hasQueueNumber}}" class="queue-button" bindtap="takeQueueNumber">取号排队</button>
+    <button wx:else class="cancel-button" bindtap="cancelQueue">取消排队</button>
+  </view>
+
+  <!-- 取号弹窗 -->
+  <view class="modal" wx:if="{{showModal}}">
+    <view class="modal-mask" bindtap="closeModal"></view>
+    <view class="modal-content">
+      <view class="modal-header">
+        <text class="modal-title">选择就餐人数</text>
+        <icon class="modal-close" type="clear" size="20" bindtap="closeModal"></icon>
+      </view>
+      <view class="modal-body">
+        <view class="people-count-selector">
+          <view class="count-item {{peopleCount === 1 ? 'active' : ''}}" bindtap="selectPeopleCount" data-count="1">1人</view>
+          <view class="count-item {{peopleCount === 2 ? 'active' : ''}}" bindtap="selectPeopleCount" data-count="2">2人</view>
+          <view class="count-item {{peopleCount === 3 ? 'active' : ''}}" bindtap="selectPeopleCount" data-count="3">3人</view>
+          <view class="count-item {{peopleCount === 4 ? 'active' : ''}}" bindtap="selectPeopleCount" data-count="4">4人</view>
+          <view class="count-item {{peopleCount === 5 ? 'active' : ''}}" bindtap="selectPeopleCount" data-count="5">5人</view>
+          <view class="count-item {{peopleCount === 6 ? 'active' : ''}}" bindtap="selectPeopleCount" data-count="6">6人</view>
+          <view class="count-item {{peopleCount > 6 ? 'active' : ''}}" bindtap="selectPeopleCount" data-count="7">7+人</view>
+        </view>
+        <view class="phone-input">
+          <input type="number" placeholder="请输入手机号（用于通知）" value="{{phoneNumber}}" bindinput="inputPhoneNumber"/>
+        </view>
+      </view>
+      <view class="modal-footer">
+        <button class="modal-confirm-btn" bindtap="confirmTakeNumber">确认取号</button>
+      </view>
+    </view>
+  </view>
+</view>

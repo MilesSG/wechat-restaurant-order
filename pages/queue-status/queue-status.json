@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "排队状态",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark",
+  "usingComponents": {}
+}

@@ -1,0 +1,7 @@
+{
+  "desc": "微信小程序餐厅点餐系统的sitemap配置",
+  "rules": [{
+    "action": "allow",
+    "page": "*"
+  }]
+} 

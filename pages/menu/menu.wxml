@@ -1,0 +1,63 @@
+<!--pages/menu/menu.wxml-->
+<view class="container menu-container">
+  <!-- 搜索区域 -->
+  <view class="search-section">
+    <view class="search-box">
+      <icon type="search" size="16" color="#999"></icon>
+      <input type="text" placeholder="搜索菜品" bindinput="searchDishes" value="{{searchTerm}}"/>
+      <icon wx:if="{{searchTerm.length > 0}}" type="clear" size="16" color="#999" bindtap="clearSearch"></icon>
+    </view>
+  </view>
+
+  <!-- 分类导航 -->
+  <scroll-view scroll-x class="category-scroll">
+    <view class="category-list">
+      <view class="category-item {{selectedCategory === 'all' ? 'active' : ''}}" 
+            data-id="all" 
+            bindtap="selectCategory">
+        全部
+      </view>
+      <view class="category-item {{selectedCategory === item.id ? 'active' : ''}}" 
+            wx:for="{{categories}}" 
+            wx:key="id" 
+            data-id="{{item.id}}" 
+            bindtap="selectCategory">
+        {{item.name}}
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 菜品列表 -->
+  <scroll-view scroll-y class="dishes-container">
+    <view class="dishes-list">
+      <view wx:if="{{filteredDishes.length === 0}}" class="no-dishes">
+        <text>没有找到匹配的菜品</text>
+      </view>
+      <view wx:else>
+        <view class="dish-card" wx:for="{{filteredDishes}}" wx:key="id">
+          <view class="dish-image">
+            <image src="{{item.image}}" mode="aspectFill"></image>
+            <view wx:if="{{item.isPopular}}" class="dish-tag popular">热门</view>
+            <view wx:if="{{item.isSpicy}}" class="dish-tag spicy">辣</view>
+          </view>
+          <view class="dish-info">
+            <view class="dish-name-price">
+              <text class="dish-name">{{item.name}}</text>
+              <text class="dish-price">¥{{item.price}}</text>
+            </view>
+            <text class="dish-desc">{{item.description}}</text>
+            <view class="dish-actions">
+              <button class="add-button" data-id="{{item.id}}" bindtap="addToCart">加入购物车</button>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 购物车悬浮按钮 -->
+  <view class="cart-button" bindtap="navigateToOrder">
+    <view class="cart-icon">🛒</view>
+    <view class="cart-text">查看购物车</view>
+  </view>
+</view>

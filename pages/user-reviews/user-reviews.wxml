@@ -1,0 +1,176 @@
+<!--pages/user-reviews/user-reviews.wxml-->
+<view class="container reviews-container">
+  <!-- 页面头部 -->
+  <view class="reviews-header">
+    <view class="header-bg"></view>
+    <view class="rating-card">
+      <view class="rating-title">餐厅总体评分</view>
+      <view class="rating-score">{{overallRating}}</view>
+      <view class="rating-stars">
+        <view class="star {{overallRating >= 1 ? 'filled' : ''}}" data-score="1" bindtap="previewScore">★</view>
+        <view class="star {{overallRating >= 2 ? 'filled' : ''}}" data-score="2" bindtap="previewScore">★</view>
+        <view class="star {{overallRating >= 3 ? 'filled' : ''}}" data-score="3" bindtap="previewScore">★</view>
+        <view class="star {{overallRating >= 4 ? 'filled' : ''}}" data-score="4" bindtap="previewScore">★</view>
+        <view class="star {{overallRating >= 5 ? 'filled' : ''}}" data-score="5" bindtap="previewScore">★</view>
+      </view>
+      <view class="rating-detail">
+        <view class="detail-item">
+          <text class="detail-label">菜品口味</text>
+          <text class="detail-value">{{ratings.taste}}</text>
+        </view>
+        <view class="detail-item">
+          <text class="detail-label">服务态度</text>
+          <text class="detail-value">{{ratings.service}}</text>
+        </view>
+        <view class="detail-item">
+          <text class="detail-label">用餐环境</text>
+          <text class="detail-value">{{ratings.environment}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 标签筛选 -->
+  <view class="filter-section card">
+    <view class="section-title">评价标签</view>
+    <view class="tag-list">
+      <view class="tag {{activeTag === 'all' ? 'active' : ''}}" data-tag="all" bindtap="filterByTag">全部 {{total}}</view>
+      <view class="tag {{activeTag === 'praise' ? 'active' : ''}}" data-tag="praise" bindtap="filterByTag">好评 {{tagCounts.praise}}</view>
+      <view class="tag {{activeTag === 'taste' ? 'active' : ''}}" data-tag="taste" bindtap="filterByTag">菜品好吃 {{tagCounts.taste}}</view>
+      <view class="tag {{activeTag === 'service' ? 'active' : ''}}" data-tag="service" bindtap="filterByTag">服务周到 {{tagCounts.service}}</view>
+      <view class="tag {{activeTag === 'environment' ? 'active' : ''}}" data-tag="environment" bindtap="filterByTag">环境舒适 {{tagCounts.environment}}</view>
+      <view class="tag {{activeTag === 'critical' ? 'active' : ''}}" data-tag="critical" bindtap="filterByTag">有待改进 {{tagCounts.critical}}</view>
+    </view>
+  </view>
+
+  <!-- 评价列表 -->
+  <view class="reviews-list">
+    <view wx:if="{{filteredReviews.length === 0}}" class="no-reviews">
+      <text>暂无相关评价</text>
+    </view>
+    <block wx:else>
+      <view class="review-item card" wx:for="{{filteredReviews}}" wx:key="id">
+        <view class="review-header">
+          <view class="user-info">
+            <image class="user-avatar" src="{{item.avatar || '/images/default_avatar.png'}}"></image>
+            <text class="user-name">{{item.username}}</text>
+          </view>
+          <view class="review-score">
+            <view class="star-row">
+              <view class="star filled" wx:for="{{item.rating}}" wx:key="*this" wx:for-item="star">★</view>
+              <view class="star" wx:for="{{5 - item.rating}}" wx:key="*this" wx:for-item="star">★</view>
+            </view>
+            <text class="review-date">{{item.date}}</text>
+          </view>
+        </view>
+        <view class="review-content">
+          <text>{{item.content}}</text>
+        </view>
+        <view wx:if="{{item.images && item.images.length > 0}}" class="review-images">
+          <image wx:for="{{item.images}}" wx:for-item="image" wx:key="*this" src="{{image}}" mode="aspectFill" bindtap="previewImage" data-url="{{image}}"></image>
+        </view>
+        <view wx:if="{{item.tags && item.tags.length > 0}}" class="review-tags">
+          <view class="review-tag" wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this">{{tag}}</view>
+        </view>
+        <view wx:if="{{item.reply}}" class="review-reply">
+          <text class="reply-title">商家回复：</text>
+          <text class="reply-content">{{item.reply}}</text>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 底部按钮 -->
+  <view class="bottom-action">
+    <button class="write-review-btn" bindtap="showReviewForm">写评价</button>
+  </view>
+
+  <!-- 评价表单弹窗 -->
+  <view class="review-modal" wx:if="{{showModal}}">
+    <view class="modal-mask" bindtap="closeModal"></view>
+    <view class="modal-content">
+      <view class="modal-header">
+        <text class="modal-title">发表评价</text>
+        <icon class="modal-close" type="clear" size="20" bindtap="closeModal"></icon>
+      </view>
+      <view class="modal-body">
+        <view class="rating-section">
+          <text class="rating-text">总体评分</text>
+          <view class="rating-stars large">
+            <view class="star {{userRating >= 1 ? 'filled' : ''}}" data-score="1" bindtap="setRating">★</view>
+            <view class="star {{userRating >= 2 ? 'filled' : ''}}" data-score="2" bindtap="setRating">★</view>
+            <view class="star {{userRating >= 3 ? 'filled' : ''}}" data-score="3" bindtap="setRating">★</view>
+            <view class="star {{userRating >= 4 ? 'filled' : ''}}" data-score="4" bindtap="setRating">★</view>
+            <view class="star {{userRating >= 5 ? 'filled' : ''}}" data-score="5" bindtap="setRating">★</view>
+          </view>
+        </view>
+        
+        <view class="rating-aspects">
+          <view class="aspect-item">
+            <text>菜品口味</text>
+            <view class="rating-stars small">
+              <view class="star {{userRatings.taste >= 1 ? 'filled' : ''}}" data-type="taste" data-score="1" bindtap="setAspectRating">★</view>
+              <view class="star {{userRatings.taste >= 2 ? 'filled' : ''}}" data-type="taste" data-score="2" bindtap="setAspectRating">★</view>
+              <view class="star {{userRatings.taste >= 3 ? 'filled' : ''}}" data-type="taste" data-score="3" bindtap="setAspectRating">★</view>
+              <view class="star {{userRatings.taste >= 4 ? 'filled' : ''}}" data-type="taste" data-score="4" bindtap="setAspectRating">★</view>
+              <view class="star {{userRatings.taste >= 5 ? 'filled' : ''}}" data-type="taste" data-score="5" bindtap="setAspectRating">★</view>
+            </view>
+          </view>
+          
+          <view class="aspect-item">
+            <text>服务态度</text>
+            <view class="rating-stars small">
+              <view class="star {{userRatings.service >= 1 ? 'filled' : ''}}" data-type="service" data-score="1" bindtap="setAspectRating">★</view>
+              <view class="star {{userRatings.service >= 2 ? 'filled' : ''}}" data-type="service" data-score="2" bindtap="setAspectRating">★</view>
+              <view class="star {{userRatings.service >= 3 ? 'filled' : ''}}" data-type="service" data-score="3" bindtap="setAspectRating">★</view>
+              <view class="star {{userRatings.service >= 4 ? 'filled' : ''}}" data-type="service" data-score="4" bindtap="setAspectRating">★</view>
+              <view class="star {{userRatings.service >= 5 ? 'filled' : ''}}" data-type="service" data-score="5" bindtap="setAspectRating">★</view>
+            </view>
+          </view>
+          
+          <view class="aspect-item">
+            <text>用餐环境</text>
+            <view class="rating-stars small">
+              <view class="star {{userRatings.environment >= 1 ? 'filled' : ''}}" data-type="environment" data-score="1" bindtap="setAspectRating">★</view>
+              <view class="star {{userRatings.environment >= 2 ? 'filled' : ''}}" data-type="environment" data-score="2" bindtap="setAspectRating">★</view>
+              <view class="star {{userRatings.environment >= 3 ? 'filled' : ''}}" data-type="environment" data-score="3" bindtap="setAspectRating">★</view>
+              <view class="star {{userRatings.environment >= 4 ? 'filled' : ''}}" data-type="environment" data-score="4" bindtap="setAspectRating">★</view>
+              <view class="star {{userRatings.environment >= 5 ? 'filled' : ''}}" data-type="environment" data-score="5" bindtap="setAspectRating">★</view>
+            </view>
+          </view>
+        </view>
+
+        <view class="content-input">
+          <textarea placeholder="请分享您的用餐体验..." value="{{reviewContent}}" bindinput="inputContent"></textarea>
+        </view>
+
+        <view class="image-uploader">
+          <view class="upload-text">添加图片（{{reviewImages.length}}/3）</view>
+          <view class="upload-area">
+            <view class="upload-item" wx:for="{{reviewImages}}" wx:key="*this">
+              <image src="{{item}}" mode="aspectFill"></image>
+              <view class="upload-remove" data-index="{{index}}" bindtap="removeImage">×</view>
+            </view>
+            <view class="upload-btn" bindtap="chooseImage" wx:if="{{reviewImages.length < 3}}">
+              <text>+</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="tag-selector">
+          <view class="selector-title">评价标签（多选）</view>
+          <view class="selector-tags">
+            <view class="selector-tag {{selectedTags.indexOf('taste') !== -1 ? 'active' : ''}}" data-tag="taste" bindtap="toggleTag">菜品好吃</view>
+            <view class="selector-tag {{selectedTags.indexOf('service') !== -1 ? 'active' : ''}}" data-tag="service" bindtap="toggleTag">服务周到</view>
+            <view class="selector-tag {{selectedTags.indexOf('environment') !== -1 ? 'active' : ''}}" data-tag="environment" bindtap="toggleTag">环境舒适</view>
+            <view class="selector-tag {{selectedTags.indexOf('price') !== -1 ? 'active' : ''}}" data-tag="price" bindtap="toggleTag">性价比高</view>
+            <view class="selector-tag {{selectedTags.indexOf('critical') !== -1 ? 'active' : ''}}" data-tag="critical" bindtap="toggleTag">有待改进</view>
+          </view>
+        </view>
+      </view>
+      <view class="modal-footer">
+        <button class="modal-confirm-btn" bindtap="submitReview">提交评价</button>
+      </view>
+    </view>
+  </view>
+</view>
